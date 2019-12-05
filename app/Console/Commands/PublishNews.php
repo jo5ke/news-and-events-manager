@@ -47,7 +47,7 @@ class PublishNews extends Command
         $news = $this->news->all();
 
         foreach ($news as $newsItem) {
-            if(Carbon::parse($newsItem->published_at)->isPast()) {
+            if (Carbon::parse($newsItem->published_at)->isPast()) {
                 $this->news->update($newsItem->id, ["status" => NewsStatus::PUB]);
             }
         }
