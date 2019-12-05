@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\News\EloquentNews;
+use App\Repositories\News\NewsRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->app->singleton(NewsRepository::class, EloquentNews::class);
     }
 }

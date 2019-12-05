@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateNewsRequest;
 use App\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use App\Repositories\News\NewsRepository;
-use App\Support\Enum\{NewsStatus, NewsType};
+use App\Support\Enum\NewsStatus;
+use App\Support\Enum\NewsType;
 
 class NewsController extends Controller
 {
 
-    /**
-     * @var NewsRepository
-     */
+    /** @var NewsRepository  */
     private $news;
 
     /**
      * NewsController constructor
+     *
      * @param NewsRepository $news
      */
     public function __construct(NewsRepository $news)
@@ -50,18 +51,20 @@ class NewsController extends Controller
             'statuses' => NewsStatus::lists(),
             'types' => NewsType::lists(),
         ];
+
         return $response;
     }
 
     /**
      * Store a newly created news in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\CreateNewsRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateNewsRequest $request)
     {
         $news = $this->news->create($request->all());
+
         return $news;
     }
 
@@ -74,6 +77,7 @@ class NewsController extends Controller
     public function show(News $news)
     {
         $news = $this->news->find($news->id);
+
         return $news;
     }
 
@@ -90,6 +94,7 @@ class NewsController extends Controller
             'statuses' => NewsStatus::lists(),
             'types' => NewsType::lists(),
         ];
+
         return $response;
     }
 
@@ -102,7 +107,8 @@ class NewsController extends Controller
      */
     public function update(Request $request, News $news)
     {
-        $news = $this->news->update($news->id,$request->all());
+        $news = $this->news->update($news->id, $request->all());
+
         return $news;
     }
 
@@ -115,7 +121,7 @@ class NewsController extends Controller
     public function destroy(News $news)
     {
         $status = $this->news->delete($news->id);
+
         return $status;
     }
-
 }
