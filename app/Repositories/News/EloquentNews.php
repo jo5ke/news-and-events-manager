@@ -5,7 +5,7 @@ namespace App\Repositories\News;
 use Cache;
 use App\Models\News;
 
-class EloquentNews implements NewsRepository, NewsRepository
+class EloquentNews implements NewsRepository
 {
 
     /** @var NewsRepository */

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateNewsRequest;
-use App\News;
-use Illuminate\Http\Request;
+use App\Http\Requests\UpdateNewsRequest;
+use App\Models\News;
+use App\Services\Upload\NewsImageManager;
 use Illuminate\Support\Facades\Input;
 use App\Repositories\News\NewsRepository;
 use App\Support\Enum\NewsStatus;
@@ -16,20 +17,28 @@ class NewsController extends Controller
     /** @var NewsRepository  */
     private $news;
 
+    /** @var NewsImageManager  */
+    private $newsImageManager;
+
     /**
      * NewsController constructor
      *
      * @param NewsRepository $news
+     * @param NewsImageManager $newsImageManager
      */
-    public function __construct(NewsRepository $news)
+    public function __construct(NewsRepository $news, NewsImageManager $newsImageManager)
     {
         $this->news = $news;
+        $this->newsImageManager = $newsImageManager;
     }
 
     /**
      * Display a listing of the news.
      *
-     * @return \Illuminate\Http\Response
+     * @param int $perPage
+     * @param string $search
+     *
+     * @return mixed
      */
     public function index()
     {
@@ -37,13 +46,14 @@ class NewsController extends Controller
             Input::get('perPage'),
             Input::get('search')
         );
+
         return $news;
     }
 
     /**
      * Show the form for creating a new news.
      *
-     * @return \Illuminate\Http\Response
+     * @return mixed
      */
     public function create()
     {
@@ -59,11 +69,14 @@ class NewsController extends Controller
      * Store a newly created news in storage.
      *
      * @param  \App\Http\Requests\CreateNewsRequest  $request
-     * @return \Illuminate\Http\Response
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function store(CreateNewsRequest $request)
     {
         $news = $this->news->create($request->all());
+
+        $this->newsImageManager->uploadAndCropAvatar($news, $request->file('image'));
 
         return $news;
     }
@@ -71,8 +84,9 @@ class NewsController extends Controller
     /**
      * Display the specified news.
      *
-     * @param  \App\News  $news
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\News  $news
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function show(News $news)
     {
@@ -84,8 +98,9 @@ class NewsController extends Controller
     /**
      * Show the form for editing the specified news.
      *
-     * @param  \App\News  $news
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\News  $news
+     *
+     * @return mixed
      */
     public function edit(News $news)
     {
@@ -101,13 +116,16 @@ class NewsController extends Controller
     /**
      * Update the specified news in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\News  $news
-     * @return \Illuminate\Http\Response
+     * @param  \App\Http\Requests\UpdateNewsRequest  $request
+     * @param  \App\Models\News  $news
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function update(Request $request, News $news)
+    public function update(UpdateNewsRequest $request, News $news)
     {
         $news = $this->news->update($news->id, $request->all());
+
+        $this->newsImageManager->uploadAndCropAvatar($news, $request->file('image'));
 
         return $news;
     }
@@ -115,8 +133,9 @@ class NewsController extends Controller
     /**
      * Remove the specified news from storage.
      *
-     * @param  \App\News  $news
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\News  $news
+     *
+     * @return bool
      */
     public function destroy(News $news)
     {
