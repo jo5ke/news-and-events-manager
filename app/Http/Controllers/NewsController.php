@@ -4,9 +4,27 @@ namespace App\Http\Controllers;
 
 use App\News;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use App\Repositories\News\NewsRepository;
+use App\Support\Enum\{NewsStatus, NewsType};
 
 class NewsController extends Controller
 {
+
+    /**
+     * @var NewsRepository
+     */
+    private $news;
+
+    /**
+     * NewsController constructor
+     * @param NewsRepository $news
+     */
+    public function __construct(NewsRepository $news)
+    {
+        $this->news = $news;
+    }
+
     /**
      * Display a listing of the news.
      *
@@ -14,7 +32,11 @@ class NewsController extends Controller
      */
     public function index()
     {
-        //
+        $news = $this->news->paginate(
+            Input::get('perPage'),
+            Input::get('search')
+        );
+        return $news;
     }
 
     /**
@@ -24,7 +46,11 @@ class NewsController extends Controller
      */
     public function create()
     {
-        //
+        $response = [
+            'statuses' => NewsStatus::lists(),
+            'types' => NewsType::lists(),
+        ];
+        return $response;
     }
 
     /**
@@ -35,7 +61,8 @@ class NewsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $news = $this->news->create($request->all());
+        return $news;
     }
 
     /**
@@ -46,7 +73,8 @@ class NewsController extends Controller
      */
     public function show(News $news)
     {
-        //
+        $news = $this->news->find($news->id);
+        return $news;
     }
 
     /**
@@ -57,7 +85,12 @@ class NewsController extends Controller
      */
     public function edit(News $news)
     {
-        //
+        $response = [
+            'news' => $this->news->find($news->id),
+            'statuses' => NewsStatus::lists(),
+            'types' => NewsType::lists(),
+        ];
+        return $response;
     }
 
     /**
@@ -69,7 +102,8 @@ class NewsController extends Controller
      */
     public function update(Request $request, News $news)
     {
-        //
+        $news = $this->news->update($news->id,$request->all());
+        return $news;
     }
 
     /**
@@ -80,14 +114,8 @@ class NewsController extends Controller
      */
     public function destroy(News $news)
     {
-        //
+        $status = $this->news->delete($news->id);
+        return $status;
     }
 
-    /**
-     * @param int $id
-     */
-    public function favorite(int $id)
-    {
-
-    }
 }
