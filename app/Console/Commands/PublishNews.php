@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\News\NewsPublished;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Repositories\News\NewsRepository;
@@ -49,6 +50,8 @@ class PublishNews extends Command
         foreach ($news as $newsItem) {
             if (Carbon::parse($newsItem->published_at)->isPast()) {
                 $this->news->update($newsItem->id, ["status" => NewsStatus::PUB]);
+
+                event(new NewsPublished($newsItem));
             }
         }
 
