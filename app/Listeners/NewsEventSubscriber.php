@@ -2,11 +2,13 @@
 
 namespace App\Listeners;
 
-use App\Events\News\NewsPublished;
+use App\Console\Commands\PublishNews;
+use App\Events\News\NewsEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use App\Events\News\NewsPublished;
 
-class NewsEventSubscriber
+class NewsEventSubscriber implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -21,11 +23,28 @@ class NewsEventSubscriber
     /**
      * Handle the event.
      *
-     * @param  NewsPublished  $event
+     * @param  NewsEvent  $event
      * @return void
      */
-    public function handle(NewsPublished $event)
+    public function handle(NewsEvent $event)
     {
         //
+    }
+
+    public function onPublish(NewsPublished $event)
+    {
+        //send mail
+    }
+
+    /**
+     * Register the listeners for the subscriber.
+     *
+     * @param  \Illuminate\Events\Dispatcher  $events
+     */
+    public function subscribe($events)
+    {
+        $class = "App\Listeners\NewsEventsSubscriber";
+
+        $events->listen(NewsPublished::class, "{$class}@onPublish");
     }
 }
