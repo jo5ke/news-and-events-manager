@@ -45,14 +45,20 @@ class PublishNews extends Command
      */
     public function handle()
     {
-        $news = $this->news->all();
+//        $news = $this->news->all();
+
+//        foreach ($news as $newsItem) {
+//            if ($newsItem->published_at->isPast()) {
+//                $this->news->update($newsItem->id, ["status" => NewsStatus::PUB]);
+//
+//                event(new NewsPublished($newsItem));
+//            }
+//        }
+
+        $news = News::forPublishing()->get();
 
         foreach ($news as $newsItem) {
-            if (Carbon::parse($newsItem->published_at)->isPast()) {
-                $this->news->update($newsItem->id, ["status" => NewsStatus::PUB]);
-
-                event(new NewsPublished($newsItem));
-            }
+            event(new NewsPublished($newsItem));
         }
 
         //TODO: send mail to user

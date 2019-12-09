@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\News\NewsPublished;
 use App\Http\Requests\CreateNewsRequest;
 use App\Http\Requests\UpdateNewsRequest;
 use App\Models\News;
 use App\Services\Upload\NewsImageManager;
-use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Request;
 use App\Repositories\News\NewsRepository;
 use App\Support\Enum\NewsStatus;
 use App\Support\Enum\NewsType;
@@ -42,12 +43,10 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $news = $this->news->paginate(
-            Input::get('perPage'),
-            Input::get('search')
+        return $this->news->paginate(
+            Request::get('perPage'),
+            Request::get('search')
         );
-
-        return $news;
     }
 
     /**
@@ -77,6 +76,10 @@ class NewsController extends Controller
         $news = $this->news->create($request->all());
 
         $this->newsImageManager->uploadAndCropAvatar($news, $request->file('image'));
+
+        if(!$request->published_at) {
+            event(new NewsPublished($news));
+        }
 
         return $news;
     }

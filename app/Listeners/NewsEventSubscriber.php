@@ -34,7 +34,7 @@ class NewsEventSubscriber implements ShouldQueue
     public function onPublish(NewsPublished $event)
     {
         $news = $event->getNews();
-        
+
         //send mail
     }
 

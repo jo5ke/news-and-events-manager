@@ -4,18 +4,18 @@ namespace App\Support\Enum;
 
 class NewsStatus
 {
-    const PUB = 'Published';
-    const UNPUB = 'Unpublished';
+    const PUBLISHED = 'Published';
+    const UNPUBLISHED = 'Unpublished';
     const DRAFT = 'Draft';
-    const SCH = 'Scheduled';
+    const SCHEDULED = 'Scheduled';
 
     public static function lists()
     {
         return [
-            self::PUB => trans('app.'.self::PUB),
-            self::UNPUB => trans('app.'.self::UNPUB),
+            self::PUBLISHED => trans('app.'.self::PUBLISHED),
+            self::UNPUBLISHED => trans('app.'.self::UNPUBLISHED),
             self::DRAFT => trans('app.'. self::DRAFT),
-            self::SCH => trans('app.'. self::SCH),
+            self::SCHEDULED => trans('app.'. self::SCHEDULED),
         ];
     }
 }
