@@ -35,7 +35,7 @@ class NewsEventSubscriber implements ShouldQueue
     {
         $news = $event->getNews();
 
-        //send mail
+        //logs
     }
 
     /**
